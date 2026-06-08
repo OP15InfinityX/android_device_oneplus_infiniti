@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- The panel advertises HWC screen decoration support, but the HWC layer can transiently
+         leave a duplicated punch-hole mask / colored line around popup transitions. Use the
+         regular SystemUI software decoration overlays on this device instead. -->
+    <bool name="config_disableHwcScreenDecorations">true</bool>
+</resources>
