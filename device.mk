@@ -18,6 +18,10 @@ PRODUCT_COPY_FILES += \
 TARGET_SCREEN_HEIGHT := 2772
 TARGET_SCREEN_WIDTH := 1272
 
+# Camera: APS turbo soft/green/crash runtime fix (interposer loaded by libAlgoProcess via DT_NEEDED)
+PRODUCT_PACKAGES += \
+    libapsfixup
+
 # Display
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/display/displayconfig.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_id_4630946903293830803.xml \
