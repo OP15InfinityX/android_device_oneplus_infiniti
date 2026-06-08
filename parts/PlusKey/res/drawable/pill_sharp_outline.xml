@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sharp inner pill outline drawn on top of the blurred halo to give the
+     "neon stroke" look in pluskey.webp. Stroke color is tinted at runtime
+     by the activity to match the current accent. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <stroke android:width="2dp" android:color="@color/oval_dim_night"/>
+    <corners android:radius="200dp"/>
+    <solid android:color="@android:color/transparent"/>
+</shape>

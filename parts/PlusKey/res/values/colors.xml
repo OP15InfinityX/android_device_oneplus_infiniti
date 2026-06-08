@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- per-action accent colors used by the glowing oval. Hand-picked to
+         feel "vibrant but premium" against a dark surface; light theme uses
+         the same hues at higher value so the glow still reads. -->
+    <color name="accent_sound_vib">#FF5C46</color>  <!-- warm coral -->
+    <color name="accent_dnd">#7A6CFF</color>        <!-- twilight indigo -->
+    <color name="accent_camera">#FFB347</color>     <!-- amber -->
+    <color name="accent_flashlight">#FFE066</color> <!-- soft yellow -->
+    <color name="accent_screenshot">#5BC0EB</color> <!-- sky -->
+    <color name="accent_recorder">#FF6FB1</color>   <!-- pink -->
+    <color name="accent_translate">#4DD699</color>  <!-- mint -->
+    <color name="accent_open_app">#9C8CFF</color>   <!-- soft violet -->
+    <color name="accent_none">#7C8794</color>       <!-- slate (muted) -->
+
+    <color name="oval_dim">#212121</color>
+    <color name="oval_dim_night">#0F0F10</color>
+</resources>

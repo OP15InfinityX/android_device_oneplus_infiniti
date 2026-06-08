@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<permissions>
+    <privapp-permissions package="com.oplus.pluskey">
+        <permission name="android.permission.WRITE_SECURE_SETTINGS"/>
+        <permission name="android.permission.WRITE_SETTINGS"/>
+        <permission name="android.permission.STATUS_BAR"/>
+        <permission name="android.permission.STATUS_BAR_SERVICE"/>
+        <permission name="android.permission.MANAGE_USERS"/>
+        <permission name="android.permission.INTERACT_ACROSS_USERS"/>
+        <permission name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+        <permission name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
+        <permission name="android.permission.MANAGE_INPUT_DEVICES"/>
+        <permission name="android.permission.MONITOR_INPUT"/>
+        <permission name="android.permission.CAPTURE_VIDEO_OUTPUT"/>
+        <permission name="android.permission.GET_TASKS"/>
+        <permission name="android.permission.REAL_GET_TASKS"/>
+        <permission name="android.permission.INJECT_EVENTS"/>
+    </privapp-permissions>
+</permissions>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Plus Key</string>
+    <string name="ai_title">AI</string>
+
+    <string name="service_running">Plus Key handler running</string>
+    <string name="long_press_hint">Press and hold to use</string>
+    <string name="short_press">Short press</string>
+    <string name="long_press">Long press</string>
+    <string name="pluskey_settings">Plus Key settings</string>
+    <string name="setting_short_screen_on_only">Short press only when screen is on</string>
+    <string name="setting_camera_trigger">Use as camera trigger</string>
+    <string name="setting_camera_trigger_apps">Camera trigger apps</string>
+
+    <!-- Action labels + descriptions. Descriptions use the OnePlus stock
+         pattern: "Press and hold to <verb> &quot;Target&quot;." -->
+    <string name="action_none">No action</string>
+    <string name="action_none_desc">Does nothing</string>
+    <string name="action_sound_vib">Sound &amp; vibration</string>
+    <string name="action_sound_vib_desc">Switch ring, vibrate, or silent</string>
+    <string name="action_dnd">Do Not Disturb</string>
+    <string name="action_dnd_desc">Toggle Do Not Disturb</string>
+    <string name="action_camera">Camera</string>
+    <string name="action_camera_desc">Open Camera</string>
+    <string name="action_flashlight">Flashlight</string>
+    <string name="action_flashlight_desc">Toggle the flashlight</string>
+    <string name="action_screenshot">Screenshot</string>
+    <string name="action_screenshot_desc">Take a screenshot</string>
+    <string name="action_recorder">Recorder</string>
+    <string name="action_recorder_desc">Start a sound recording</string>
+    <string name="action_translate">Translate</string>
+    <string name="action_translate_desc">Open Translate</string>
+    <string name="action_open_app">Open app</string>
+    <string name="action_open_app_desc">Open the chosen app</string>
+    <string name="action_open_app_desc_named">Open %1$s</string>
+    <string name="action_open_app_pick_summary">Choose app</string>
+    <string name="action_open_app_pick_title">Choose an app</string>
+
+    <!-- Action feedback -->
+    <string name="feedback_silent">Silent</string>
+    <string name="feedback_vibrate">Vibrate</string>
+    <string name="feedback_ring">Ring</string>
+    <string name="feedback_dnd_on">Do Not Disturb on</string>
+    <string name="feedback_dnd_off">Do Not Disturb off</string>
+    <string name="feedback_dnd_no_perm">Grant DND access in Settings to use this</string>
+    <string name="feedback_flash_unavailable">No flashlight available</string>
+    <string name="feedback_translate_installing">Install Google Translate, it will open automatically</string>
+    <string name="feedback_todo">Coming soon</string>
+
+    <!-- Camera mode picker -->
+    <string name="camera_mode_label">Camera mode</string>
+    <string name="camera_mode_photo">Photo</string>
+    <string name="camera_mode_video">Video</string>
+    <string name="camera_mode_selfie">Selfie</string>
+    <string name="camera_mode_portrait">Portrait</string>
+    <string name="camera_mode_macro">Macro</string>
+    <string name="camera_mode_slo_mo">Slow motion</string>
+
+    <!-- Bottom CTA pill: shows "In use" for the currently saved action,
+         "Set" otherwise (tapping persists the centred chip). -->
+    <string name="in_use">In use</string>
+    <string name="set_action">Set</string>
+
+    <!-- AI page placeholder -->
+    <string name="ai_coming_soon">Coming soon</string>
+    <string name="ai_coming_soon_subtitle">On-device AI features for the OnePlus 13s land here.</string>
+</resources>

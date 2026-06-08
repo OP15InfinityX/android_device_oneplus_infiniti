@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.oplus.pluskey"
+    android:sharedUserId="android.uid.system"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
+    <uses-permission android:name="android.permission.STATUS_BAR"/>
+    <uses-permission android:name="android.permission.STATUS_BAR_SERVICE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.FLASHLIGHT"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.REAL_GET_TASKS"/>
+    <uses-permission android:name="android.permission.INJECT_EVENTS"/>
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.READ_SEARCH_INDEXABLES"/>
+
+    <protected-broadcast android:name="com.oplus.pluskey.SHORT_PRESS"/>
+    <protected-broadcast android:name="com.oplus.pluskey.LONG_PRESS"/>
+    <protected-broadcast android:name="com.oplus.pluskey.CAMERA_TRIGGER_DOWN"/>
+    <protected-broadcast android:name="com.oplus.pluskey.CAMERA_TRIGGER_UP"/>
+
+    <application
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_pluskey"
+        android:theme="@style/Theme.PlusKey"
+        android:allowBackup="false"
+        android:supportsRtl="true">
+
+        <!-- Settings activity. No MAIN/LAUNCHER — only opens via the custom
+             intent action that the Settings root category dispatches to. This
+             keeps PlusKey out of launcher / app lists. -->
+        <activity
+            android:name=".ui.PlusKeyActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.PlusKey">
+            <intent-filter>
+                <action android:name="com.oplus.pluskey.SETTINGS"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.AiActivity"
+            android:exported="true"
+            android:label="@string/ai_title"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.PlusKey">
+            <intent-filter>
+                <action android:name="com.oplus.pluskey.AI_SETTINGS"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <!-- App picker for the "Open app" action. Opened from PlusKeyActivity
+             when the user taps the action while no target package is set,
+             and from OpenAppAction itself if the chosen app got uninstalled. -->
+        <activity
+            android:name=".ui.AppPickerActivity"
+            android:exported="false"
+            android:label="@string/action_open_app_pick_title"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.PlusKey"/>
+
+        <!-- Receives long-press broadcast from the patched PhoneWindowManager
+             (frameworks/base patches/0010-pwm-pluskey-handler.patch). -->
+        <receiver
+            android:name=".service.PlusKeyReceiver"
+            android:exported="true"
+            android:directBootAware="true">
+            <intent-filter>
+                <action android:name="com.oplus.pluskey.SHORT_PRESS"/>
+                <action android:name="com.oplus.pluskey.LONG_PRESS"/>
+                <action android:name="com.oplus.pluskey.CAMERA_TRIGGER_DOWN"/>
+                <action android:name="com.oplus.pluskey.CAMERA_TRIGGER_UP"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- Auto-launches Google Translate the moment its install completes,
+             so the Translate action's "send user to Play Store" detour
+             continues seamlessly into "open the app" on the user's behalf. -->
+        <receiver
+            android:name=".service.TranslateInstallReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

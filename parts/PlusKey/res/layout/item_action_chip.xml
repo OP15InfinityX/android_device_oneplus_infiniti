@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Single chip in the bottom action row. No ripple background — selection
+    is driven by snap-to-centre (LinearSnapHelper), and a tap just smooth-
+    scrolls the chip into the centre slot. The visual selected state (full
+    opacity + accent tint) is applied by the adapter based on which chip is
+    currently the centred one.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="56dp"
+    android:layout_height="56dp"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/chip_icon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:contentDescription="@null"/>
+</FrameLayout>

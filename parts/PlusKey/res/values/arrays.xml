@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Order MUST match Constants.CAM_MODE_* int values. -->
+    <string-array name="camera_modes">
+        <item>@string/camera_mode_photo</item>
+        <item>@string/camera_mode_video</item>
+        <item>@string/camera_mode_selfie</item>
+        <item>@string/camera_mode_portrait</item>
+        <item>@string/camera_mode_macro</item>
+        <item>@string/camera_mode_slo_mo</item>
+    </string-array>
+</resources>

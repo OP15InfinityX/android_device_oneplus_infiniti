@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Activity background for the Plus Key page. Two layers:
+      (bottom) the system surface colour, so the page still adapts to the
+               user's wallpaper-derived Material You theme and dark/light
+               mode. Pure-black would look flat and dead; using ?colorSurface
+               keeps it alive.
+      (top)    a very subtle radial fall painted slightly above centre, so
+               the dark surface has a hint of "the screen has been hit by
+               a soft light from above-and-front" — matches the camera.png
+               vibe where the phone is photographed under ambient light.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/colorSurface"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="640dp"
+                android:centerX="0.5"
+                android:centerY="0.32"
+                android:startColor="#14FFFFFF"
+                android:endColor="#00FFFFFF"/>
+        </shape>
+    </item>
+</layer-list>

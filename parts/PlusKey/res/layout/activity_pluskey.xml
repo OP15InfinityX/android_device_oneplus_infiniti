@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Layered structure so the GlowingPillView's blur halo can bleed past the
+    toolbar and chip-row areas:
+      (background) GlowingPillView fills the entire activity. It owns the
+                   pill geometry: centred location with stagePadding so the
+                   blur has the WHOLE view to fall off into.
+      (foreground) Vertical LinearLayout holds toolbar / chips / Set pill on
+                   top of the glow with transparent backgrounds. The pill's
+                   inner content (icon + label + description + camera mode)
+                   lives in the middle weight=1 region, centred over where
+                   GlowingPillView draws the pill.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@drawable/bg_pluskey_surface">
+
+    <com.oplus.pluskey.ui.GlowingPillView
+        android:id="@+id/pill_halo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="@string/app_name"
+            app:titleCentered="false"
+            android:background="@android:color/transparent"
+            app:navigationIcon="@drawable/ic_arrow_back"/>
+
+        <FrameLayout
+            android:id="@+id/pill_stage"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <!-- Inner content stays well inside the glowing pill. Pill
+                 silhouette = (screen-128dp) wide before the 24dp metal
+                 stroke; we cap text at 180dp so even on small screens the
+                 title doesn't kiss the glow and the description never
+                 bleeds past the curve. Long descriptions are clamped to
+                 two lines + ellipsis so the pill height stays predictable. -->
+            <LinearLayout
+                android:id="@+id/pill_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:maxWidth="200dp">
+
+                <TextView
+                    android:id="@+id/gesture_selector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="18dp"
+                    android:gravity="center"
+                    android:paddingHorizontal="14dp"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:background="@drawable/bg_camera_mode_pill"
+                    android:clickable="true"
+                    android:focusable="true"/>
+
+                <ImageView
+                    android:id="@+id/action_icon"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:contentDescription="@null"
+                    android:layout_marginBottom="20dp"/>
+
+                <TextView
+                    android:id="@+id/action_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="180dp"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:gravity="center"
+                    android:maxLines="2"/>
+
+                <TextView
+                    android:id="@+id/action_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:maxWidth="180dp"
+                    android:textSize="13sp"
+                    android:gravity="center"
+                    android:alpha="0.65"
+                    android:textColor="?attr/colorOnSurface"
+                    android:maxLines="2"
+                    android:ellipsize="end"/>
+
+                <!-- Open-app target pill — mirrors the camera mode chip
+                     (text + chevron) so the affordance is obvious.
+                     Visible only when Open app is focused; tap opens the
+                     AppPickerActivity so the user can change which app
+                     this action launches. -->
+                <LinearLayout
+                    android:id="@+id/open_app_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="18dp"
+                    android:paddingVertical="8dp"
+                    android:background="@drawable/bg_camera_mode_pill"
+                    android:visibility="gone"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/open_app_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="140dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface"/>
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="6dp"
+                        android:src="@drawable/ic_dropdown_chevron"
+                        android:contentDescription="@null"
+                        android:alpha="0.7"/>
+                </LinearLayout>
+
+                <!-- Camera-mode mini dropdown — Material 3 style: text + chevron,
+                     centred horizontally. Shown only when the focused action is
+                     Camera. Tapping opens a PopupMenu listing the modes. -->
+                <LinearLayout
+                    android:id="@+id/camera_mode_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="18dp"
+                    android:paddingVertical="8dp"
+                    android:background="@drawable/bg_camera_mode_pill"
+                    android:visibility="gone"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/camera_mode_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface"/>
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="6dp"
+                        android:src="@drawable/ic_dropdown_chevron"
+                        android:contentDescription="@null"
+                        android:alpha="0.7"/>
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/action_chips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="12dp"
+            android:clipToPadding="false"
+            android:scrollbars="none"
+            android:overScrollMode="never"/>
+
+        <!-- Bottom CTA: shows "Set" while the focused chip differs from the
+             saved action (tap to persist), or "In use" once they match. -->
+        <TextView
+            android:id="@+id/cta_button"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="36dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/in_use"
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSurface"
+            android:background="@drawable/bg_in_use_pill"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
+</FrameLayout>
