@@ -18,7 +18,8 @@ PRODUCT_COPY_FILES += \
 TARGET_SCREEN_HEIGHT := 2772
 TARGET_SCREEN_WIDTH := 1272
 
-# Camera: APS turbo soft/green/crash runtime fix (interposer loaded by libAlgoProcess via DT_NEEDED)
+# OPlus Camera
+  $(call inherit-product-if-exists, device/oneplus/infiniti-camera/opluscamera.mk)
 PRODUCT_PACKAGES += \
     libapsfixup
 
