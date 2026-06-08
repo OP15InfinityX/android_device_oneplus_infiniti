@@ -2,7 +2,7 @@
 ro.product.odm.device=OP60FFL1
 ro.product.odm.model=PLK110
 ro.product.odm.name=PLK110
-ro.vendor.oplus.regionmark=CN
+ro.vendor.oplus.regionmark=ROW
 
 # NFC
 persist.vendor.nfc.config_file_name=libnfc-mtp-SN220.conf_24831
