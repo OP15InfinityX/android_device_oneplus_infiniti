@@ -5,6 +5,10 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources>
+    <!-- Hide the legacy Assist key controls; PlusKey owns KEYCODE_ASSIST. -->
+    <integer name="config_deviceHardwareKeys">64</integer>
+    <integer name="config_deviceHardwareWakeKeys">64</integer>
+
     <!-- Whether the device supports wireless charging or not -->
     <bool name="config_deviceSupportsWirelessCharging">true</bool>
 </resources>
