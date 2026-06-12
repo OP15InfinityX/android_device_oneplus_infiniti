@@ -1,5 +1,5 @@
 ## All proprietary files from this list, unless pinned and noted otherwise,
-## are from OnePlus 15 (CPH2745_16.0.7.201(EX01)).
+## are from OnePlus 15 (CPH2745_16.0.8.300(EX01)).
 
 # ACDB
 odm/etc/acdbdata/FTM/acdb_cal.acdb
@@ -1817,7 +1817,9 @@ odm/firmware/tp/infiniti/libafe_s3910.so
 odm/firmware/tp/infiniti/libafepanel_s3910_boe.so
 odm/firmware/tp/infiniti/libafepanel_s3910_tianma.so
 odm/firmware/tp/infiniti/libpostalgo.so
+odm/firmware/tp/infiniti/libpostalgo_symbol.so
 odm/firmware/tp/infiniti/libprealgo.so
+odm/firmware/tp/infiniti/libprealgo_symbol.so
 odm/firmware/tp/infiniti/main_synaptics-s3910_boe_aging_limit.csv
 odm/firmware/tp/infiniti/main_synaptics-s3910_boe_limit.csv
 odm/firmware/tp/infiniti/main_synaptics-s3910_tianma_aging_limit.csv
