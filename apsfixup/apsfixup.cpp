@@ -16,18 +16,26 @@
 //   * ARC_Turbo_RAW_Process is resolved by libAlgoInterface via dlsym() -> overwrite the dlsym
 //     JUMP_SLOT in libAlgoInterface so our wrapper is what gets stored in the engine struct.
 //
-// Loaded into com.oplus.camera as a DT_NEEDED of /odm/lib64/libAlgoProcess.so. Offsets are
-// pinned to the infiniti (OnePlus 15, SM8850, OOS 16.0.8.300) blobs, re-anchored via
-// readelf JUMP_SLOT offsets (host static analysis; no runtime/frida discovery needed):
-//   libAlgoProcess.so    BuildId 2217d555..  p010LSB2MSBNeon @ +0x4fc25c, its GOT slot @ +0x689ba8
-//   libAlgoInterface.so  BuildId f76a8818..  dlsym GOT slot @ +0x1bb67c8
-// A runtime NT_GNU_BUILD_ID check (build_id_matches) gates application — fail-safe across an OOS OTA
-// (if the blob changes, the offsets are stale, so we refuse to redirect rather than crash).
+// Loaded into com.oplus.camera as a DT_NEEDED of /odm/lib64/libAlgoProcess.so. Offsets are pinned
+// to the infiniti (OnePlus 15, SM8850) odm blobs via readelf R_AARCH64_JUMP_SLOT offsets (host
+// static analysis; no runtime/frida discovery needed):
+//   libAlgoProcess.so    p010LSB2MSBNeon GOT slot @ +0x689ba8   (FUNC @ +0x4fc094 in .201 / +0x4fc25c in .300)
+//   libAlgoInterface.so  dlsym@LIBC GOT slot      @ +0x1bb67c8
+//
+// NO BuildId guard (dodge-faithful). The GOT-slot offsets above are STABLE across the OOS .201/.300
+// libAlgoProcess builds; only the p010 FUNC vaddr moved, and that is used solely for a cosmetic
+// "blob drift?" LOGW, never to gate the hook. A prior version added a build_id_matches() guard that
+// refused to redirect unless the loaded blob's NT_GNU_BUILD_ID matched a hardcoded id; whenever the
+// shipped odm blob and the anchored id disagree (as happened with a stale .201 blob vs a .300 anchor)
+// it made the shim PERMANENTLY INERT on the flashed image (no p010/chroma fix -> capture crash).
+// Dropping the guard restores dodge behaviour: redirect the (version-stable) GOT slot and store
+// whatever real function pointer it holds. The proprietary blobs are now synced to OOS .300
+// (libAlgoProcess BuildId 2217d555); the GOT slots are unchanged, so the redirect is correct either way.
 //
 #include <android/log.h>
 #include <dlfcn.h>
-#include <elf.h>
 #include <inttypes.h>
+#include <link.h>
 #include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -39,14 +47,9 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__)
 
-// infiniti (SM8850, OOS 16.0.8.300) — re-anchored from the .300 blobs via readelf R_AARCH64_JUMP_SLOT offsets.
-// v1.3 bump from .201: only the p010 FUNC vaddr moved (0x4fc094->0x4fc25c); both GOT slots are stable; both BuildIds changed.
-static const uintptr_t P010_FUNC_OFF = 0x4fc25c;   // p010LSB2MSBNeon (_ZN22APSFormatConverterNeon15p010LSB2MSBNeonEPtS0_jjjj)
-static const uintptr_t P010_GOT_OFF  = 0x689ba8;   // its JUMP_SLOT GOT entry in libAlgoProcess (unchanged .201->.300)
-static const uintptr_t DLSYM_GOT_OFF = 0x1bb67c8;  // dlsym@LIBC JUMP_SLOT GOT entry in libAlgoInterface (unchanged .201->.300)
-// BuildId guard: only apply if the loaded blob matches what these offsets were anchored against.
-static const char* EXPECT_ALGOPROC_BUILDID  = "2217d555bacb9e8f9c2a81a609ca9f47";
-static const char* EXPECT_ALGOIFACE_BUILDID = "f76a88188a00589db385183c025443fb";
+static const uintptr_t P010_FUNC_OFF = 0x4fc25c;   // p010LSB2MSBNeon in the .300 blob (2217d555); cosmetic drift-check only
+static const uintptr_t P010_GOT_OFF  = 0x689ba8;   // its JUMP_SLOT GOT entry in libAlgoProcess (stable .201/.300)
+static const uintptr_t DLSYM_GOT_OFF = 0x1bb67c8;  // dlsym@LIBC JUMP_SLOT GOT entry in libAlgoInterface (stable .201/.300)
 
 static inline bool is_buf(uint64_t v)     { uint32_t hi=(uint32_t)(v>>32); return hi>=0x70 && hi<=0x7f && (uint32_t)v >= 0x100000u; }
 static inline bool is_garbage(uint64_t v) { uint32_t hi=(uint32_t)(v>>32); return hi>=0x70 && hi<=0x7f && (uint32_t)v <  0x100000u; }
@@ -63,16 +66,28 @@ static bool range_of(uint64_t addr, uint64_t* out_base, uint64_t* out_size) {
     fclose(f);
     return found;
 }
-static bool module_base(const char* name, uint64_t* out_base) {
-    FILE* f = fopen("/proc/self/maps", "re");
-    if (!f) return false;
-    char line[512]; uint64_t best = 0;
-    while (fgets(line, sizeof(line), f)) {
-        if (strstr(line, name)) { uint64_t lo;
-            if (sscanf(line, "%" SCNx64, &lo) == 1) if (best == 0 || lo < best) best = lo; }
+// Load bias of a DT_NEEDED/dlopen'd object, via dl_iterate_phdr (runs under the linker lock -> an
+// ATOMIC, consistent view; no /proc/self/maps torn read). Kept from the v1.3.1 hardening: parsing
+// /proc/self/maps with fgets+sscanf while the linker is concurrently mmap'ing the camera blobs can
+// return a bogus/unmapped base; dl_iterate_phdr returns dlpi_addr (true bias) keyed on the basename.
+struct mb_ctx { const char* want; uint64_t base; bool found; };
+static int mb_cb(struct dl_phdr_info* info, size_t, void* data) {
+    auto* c = (mb_ctx*)data;
+    const char* nm = info->dlpi_name;
+    if (!nm || !*nm) return 0;                       // skip the main executable (empty name)
+    const char* slash = strrchr(nm, '/');
+    const char* basenm = slash ? slash + 1 : nm;     // compare basenames, not full paths
+    if (strcmp(basenm, c->want) == 0) {
+        c->base  = (uint64_t)info->dlpi_addr;        // load bias (== ELF base for a PIE/.so)
+        c->found = true;
+        return 1;                                    // stop iteration
     }
-    fclose(f);
-    if (best) { *out_base = best; return true; }
+    return 0;
+}
+static bool module_base(const char* name, uint64_t* out_base) {
+    mb_ctx c{ name, 0, false };
+    dl_iterate_phdr(mb_cb, &c);
+    if (c.found) { *out_base = c.base; return true; }
     return false;
 }
 
@@ -85,33 +100,6 @@ static bool got_redirect(uint64_t slot, void* newval, void** old) {
     *got = newval;
     mprotect((void*)page, 0x1000, PROT_READ);   // restore relro (BIND_NOW: nothing else writes it)
     return true;
-}
-
-// Read NT_GNU_BUILD_ID of the ELF mapped at `base` and compare its hex prefix to want_hex.
-// Fail-safe: any parse failure / mismatch -> false -> the caller refuses to apply the fix.
-static bool build_id_matches(uint64_t base, const char* want_hex) {
-    const Elf64_Ehdr* eh = (const Elf64_Ehdr*)base;
-    if (memcmp(eh->e_ident, ELFMAG, SELFMAG) != 0) return false;
-    const Elf64_Phdr* ph = (const Elf64_Phdr*)(base + eh->e_phoff);
-    for (int i = 0; i < eh->e_phnum; i++) {
-        if (ph[i].p_type != PT_NOTE) continue;
-        const uint8_t* p   = (const uint8_t*)(base + ph[i].p_vaddr);
-        const uint8_t* end = p + ph[i].p_memsz;
-        while (p + sizeof(Elf64_Nhdr) <= end) {
-            const Elf64_Nhdr* n = (const Elf64_Nhdr*)p;
-            const char* nm      = (const char*)(p + sizeof(Elf64_Nhdr));
-            const uint8_t* desc = (const uint8_t*)nm + ((n->n_namesz + 3) & ~3u);
-            if (n->n_type == NT_GNU_BUILD_ID && n->n_namesz == 4 && memcmp(nm, "GNU", 4) == 0) {
-                char hex[48]; size_t k = 0;
-                for (uint32_t j = 0; j < n->n_descsz && k + 2 < sizeof(hex); j++)
-                    k += (size_t)snprintf(hex + k, sizeof(hex) - k, "%02x", desc[j]);
-                hex[k < sizeof(hex) ? k : sizeof(hex) - 1] = 0;
-                return strncmp(hex, want_hex, strlen(want_hex)) == 0;
-            }
-            p = desc + ((n->n_descsz + 3) & ~3u);
-        }
-    }
-    return false;
 }
 
 // ---- (1) chroma struct repair (called from our ARC wrapper) ----
@@ -200,36 +188,26 @@ static void wrap_p010(uint16_t* dst, uint16_t* src, uint32_t w2, uint32_t w3, ui
     g_real_p010(dst, src, w2, w3, w4, w5);
 }
 
-// ---- install ----
+// ---- install (dodge-faithful: unconditional GOT redirect, no BuildId gate) ----
 static bool g_p010_done = false, g_dlsym_done = false;
 static void try_install() {
     uint64_t base;
     if (!g_p010_done && module_base("libAlgoProcess.so", &base)) {
-        if (!build_id_matches(base, EXPECT_ALGOPROC_BUILDID)) {
-            LOGW("libAlgoProcess BuildId != %s -- NOT applying p010 fix (blob changed; re-anchor offsets)", EXPECT_ALGOPROC_BUILDID);
-            g_p010_done = true;   // fail-safe: stop retrying, never redirect a mismatched blob
-        } else {
-            void* old = nullptr;
-            if (got_redirect(base + P010_GOT_OFF, (void*)wrap_p010, &old)) {
-                g_real_p010 = (p010_t)old;
-                void* expect = (void*)(base + P010_FUNC_OFF);
-                if (old != expect) LOGW("GOT[p010]=%p expected %p (blob drift?)", old, expect);
-                LOGI("GOT-hooked p010 (real=%p)", old);
-                g_p010_done = true;
-            }
+        void* old = nullptr;
+        if (got_redirect(base + P010_GOT_OFF, (void*)wrap_p010, &old)) {
+            g_real_p010 = (p010_t)old;
+            void* expect = (void*)(base + P010_FUNC_OFF);
+            if (old != expect) LOGW("GOT[p010]=%p expected %p (blob drift / .201<->.300 -- harmless)", old, expect);
+            LOGI("GOT-hooked p010 (real=%p)", old);
+            g_p010_done = true;
         }
     }
     if (!g_dlsym_done && module_base("libAlgoInterface.so", &base)) {
-        if (!build_id_matches(base, EXPECT_ALGOIFACE_BUILDID)) {
-            LOGW("libAlgoInterface BuildId != %s -- NOT applying dlsym hook (blob changed)", EXPECT_ALGOIFACE_BUILDID);
+        void* old = nullptr;
+        if (got_redirect(base + DLSYM_GOT_OFF, (void*)wrap_dlsym, &old)) {
+            g_real_dlsym = (dlsym_t)old;
+            LOGI("GOT-hooked dlsym in libAlgoInterface (real=%p)", old);
             g_dlsym_done = true;
-        } else {
-            void* old = nullptr;
-            if (got_redirect(base + DLSYM_GOT_OFF, (void*)wrap_dlsym, &old)) {
-                g_real_dlsym = (dlsym_t)old;
-                LOGI("GOT-hooked dlsym in libAlgoInterface (real=%p)", old);
-                g_dlsym_done = true;
-            }
         }
     }
 }
