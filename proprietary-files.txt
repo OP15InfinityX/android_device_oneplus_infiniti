@@ -83,6 +83,9 @@ odm/etc/audio/oprec_audrec_params/oprec_record_ID99_Bypass.bin
 odm/etc/audio/oprec_audrec_params/oprec_record_ID9_HE.bin
 odm/etc/audio/oprec_audrec_params/oprec_record_calibration.bin
 
+# Oplus feature flags
+my_product/etc/permissions/oplus.feature.android.xml:product/etc/permissions/oplus.feature.android.xml
+
 # Camera
 odm/bin/hw/vendor.oplus.hardware.cammidasservice-V1-service
 odm/etc/camera/AIAE_Models/AIAEVideoModelMain.bin
