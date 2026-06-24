@@ -33,11 +33,13 @@ constexpr char kOplusMinFpsPath[] = "/sys/kernel/oplus_display/min_fps";
 constexpr char kMeasuredFpsPath[] = "/sys/class/drm/card0-sde-crtc-0/measured_fps";
 constexpr char kFpsPeriodicityPath[] = "/sys/class/drm/card0-sde-crtc-0/fps_periodicity_ms";
 constexpr char kOplusRefreshRateProperty[] = "vendor.display.oplus_refresh_rate";
+constexpr char kOplusLtpoMinFpsProperty[] = "vendor.display.oplus_ltpo_min_fps";
 constexpr auto kMinFpsMirrorInterval = std::chrono::milliseconds(50);
 
 constexpr int kFeatureAdfr2MinFpsEnable = 232;
 constexpr int kFeatureAdfr2MinFpsState = 233;
 constexpr int kFeatureRusUpdate = 234;
+constexpr int kLowestUserMinFps = 30;
 
 struct AdfrConfig {
     int version = 0;
@@ -282,11 +284,35 @@ int readIntFile(const char* path) {
     return result.ec == std::errc() ? parsed : 0;
 }
 
+int readUserMinFpsFloor() {
+    const int minFps = android::base::GetIntProperty(kOplusLtpoMinFpsProperty, 0);
+    return minFps >= kLowestUserMinFps ? minFps : 0;
+}
+
+void enforceUserMinFpsFloor(int minFpsFloor) {
+    if (minFpsFloor <= 0) {
+        return;
+    }
+
+    const int currentMinFps = readIntFile(kOplusMinFpsPath);
+    if (currentMinFps >= minFpsFloor) {
+        return;
+    }
+
+    const std::string value = std::to_string(minFpsFloor);
+    if (!android::base::WriteStringToFile(value, kOplusMinFpsPath)) {
+        PLOG(WARNING) << "Failed to enforce Oplus min fps floor " << value;
+    }
+}
+
 void mirrorMinFpsProperty() {
     android::base::WriteStringToFile("100", kFpsPeriodicityPath);
 
     std::string lastValue;
     while (true) {
+        const int minFpsFloor = readUserMinFpsFloor();
+        enforceUserMinFpsFloor(minFpsFloor);
+
         int refreshRate = 0;
 
         std::string measuredFps;
@@ -296,6 +322,10 @@ void mirrorMinFpsProperty() {
 
         if (refreshRate <= 0) {
             refreshRate = readIntFile(kOplusMinFpsPath);
+        }
+
+        if (minFpsFloor > 0 && refreshRate < minFpsFloor) {
+            refreshRate = minFpsFloor;
         }
 
         if (refreshRate > 0) {
