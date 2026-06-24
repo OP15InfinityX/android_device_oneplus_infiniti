@@ -73,8 +73,7 @@ blob_fixups: blob_fixups_user_type = {
         .clear_symbol_version('AHardwareBuffer_release')
         .clear_symbol_version('AHardwareBuffer_unlock'),
     'odm/lib64/libAlgoProcess.so': blob_fixup()
-        .replace_needed('android.hardware.graphics.common-V5-ndk.so', 'android.hardware.graphics.common-V7-ndk.so')
-        .add_needed('libapsfixup.so'),
+        .replace_needed('android.hardware.graphics.common-V5-ndk.so', 'android.hardware.graphics.common-V7-ndk.so'),
     'odm/lib64/liboprec_audrec.so': blob_fixup()
         .replace_needed('libstdc++.so', 'libstdc++_vendor.so'),
     'vendor/etc/libnfc-nci.conf': blob_fixup()

@@ -20,8 +20,6 @@ TARGET_SCREEN_WIDTH := 1272
 
 # OPlus Camera
   $(call inherit-product-if-exists, device/oneplus/infiniti-camera/opluscamera.mk)
-PRODUCT_PACKAGES += \
-    libapsfixup
 
 # Display
 PRODUCT_COPY_FILES += \
