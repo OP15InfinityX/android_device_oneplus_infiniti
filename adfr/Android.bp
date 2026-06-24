@@ -1,0 +1,13 @@
+cc_binary {
+    name: "oplus_adfr_init",
+    srcs: ["oplus_adfr_init.cpp"],
+    device_specific: true,
+    init_rc: ["oplus_adfr_init.rc"],
+    shared_libs: [
+        "libbase",
+        "libbinder_ndk",
+        "liblog",
+        "libtinyxml2",
+        "vendor.oplus.hardware.displaypanelfeature-V1-ndk",
+    ],
+}

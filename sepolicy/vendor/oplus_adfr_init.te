@@ -1,0 +1,14 @@
+type oplus_adfr_init, domain;
+type oplus_adfr_init_exec, exec_type, vendor_file_type, file_type;
+
+init_daemon_domain(oplus_adfr_init)
+
+binder_use(oplus_adfr_init)
+hal_client_domain(oplus_adfr_init, vendor_hal_oplus_displaypanelfeature)
+binder_call(oplus_adfr_init, hal_oplus_displaypanelfeature_aidl)
+
+allow oplus_adfr_init vendor_file:file r_file_perms;
+allow oplus_adfr_init vendor_sysfs_graphics:dir search;
+allow oplus_adfr_init vendor_sysfs_graphics:file rw_file_perms;
+
+set_prop(oplus_adfr_init, vendor_display_prop)

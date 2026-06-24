@@ -14,6 +14,10 @@ include device/oneplus/sm8850-common/BoardConfigCommon.mk
 
 DEVICE_PATH := device/oneplus/infiniti
 
+# SELinux
+BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/private
+
 # Assert
 TARGET_OTA_ASSERT_DEVICE := OP60FFL1,OP611FL1
 

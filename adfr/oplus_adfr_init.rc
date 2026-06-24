@@ -1,0 +1,4 @@
+service oplus_adfr_init /odm/bin/oplus_adfr_init
+    class late_start
+    user root
+    group system graphics

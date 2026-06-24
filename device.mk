@@ -28,6 +28,17 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/display/displayconfig.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_id_4630946903293830803.xml \
     $(LOCAL_PATH)/configs/display/displayconfig.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_id_4630946982335253651.xml
 
+PRODUCT_PACKAGES += \
+    oplus_adfr_init
+
+PRODUCT_PRODUCT_PROPERTIES += \
+    persist.oplus.display.minifps.normalize=true \
+    persist.oplus.display.ogfr.exclusive=144,165 \
+    persist.oplus.display.vrr=1 \
+    persist.oplus.display.vrr.adfr=2 \
+    persist.oplus.display.vrr.pdfr=1 \
+    sys.oplus.display.refreshrate_thread=true
+
 # Keymint
 PRODUCT_PACKAGES += \
     android.hardware.security.keymint3-service.strongbox.nxp \

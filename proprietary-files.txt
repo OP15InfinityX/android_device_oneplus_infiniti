@@ -1510,8 +1510,25 @@ odm/firmware/fastchg/charging_thermal_config_default.txt
 odm/firmware/fastchg/smart_chg_config_table.txt
 
 # Display configurations
+my_product/etc/oplus_vrr_config.json:product/etc/oplus_vrr_config.json
+my_product/etc/refresh_rate_config.xml:product/etc/refresh_rate_config.xml
+my_product/etc/sys_dynamic_frame_config.xml:product/etc/sys_dynamic_frame_config.xml
+my_product/etc/extension/com.oplus.oplus-feature.xml:product/etc/extension/com.oplus.oplus-feature.xml
+my_product/etc/permissions/oplus.product.display_features.xml:product/etc/permissions/oplus.product.display_features.xml
+my_product/etc/permissions/oplus.product.display_system_features.xml:product/etc/permissions/oplus.product.display_system_features.xml
+my_product/etc/permissions/oplus.product.feature_multimedia_unique.xml:product/etc/permissions/oplus.product.feature_multimedia_unique.xml
 my_product/vendor/etc/display_apollo_list_AA601_P_7_A0020_dsc_cmd_mode_panel.xml:vendor/etc/display_apollo_list_AA601_P_7_A0020_dsc_cmd_mode_panel.xml
 my_product/vendor/etc/display_apollo_list_AD296_P_3_A0020_dsc_cmd_mode_panel.xml:vendor/etc/display_apollo_list_AD296_P_3_A0020_dsc_cmd_mode_panel.xml
+my_product/vendor/etc/display_brightness_app_list.xml:vendor/etc/display_brightness_app_list.xml
+my_product/vendor/etc/display_brightness_config_P_3.xml:vendor/etc/display_brightness_config_P_3.xml
+my_product/vendor/etc/display_brightness_config_P_7.xml:vendor/etc/display_brightness_config_P_7.xml
+my_product/vendor/etc/display_frc_white_list.xml:vendor/etc/display_frc_white_list.xml
+my_product/vendor/etc/multimedia_display_adfr2minfps_config.xml:vendor/etc/multimedia_display_adfr2minfps_config.xml
+my_product/vendor/etc/multimedia_display_brightness_config.xml:vendor/etc/multimedia_display_brightness_config.xml
+my_product/vendor/etc/multimedia_display_feature_config.xml:vendor/etc/multimedia_display_feature_config.xml
+my_product/vendor/etc/multimedia_display_trackpoint_config.xml:vendor/etc/multimedia_display_trackpoint_config.xml
+my_product/vendor/etc/multimedia_display_uir_config.xml:vendor/etc/multimedia_display_uir_config.xml
+my_product/vendor/etc/multimedia_display_voltage_limit.xml:vendor/etc/multimedia_display_voltage_limit.xml
 odm/etc/PanelChaplin/3D-Lut_Center_P3.txt
 odm/etc/PanelChaplin/3D-Lut_Center_sRGB.txt
 odm/etc/PanelChaplin/3D-Lut_Enhance_P3.txt
