@@ -83,6 +83,12 @@ struct AdfrConfig {
     std::vector<int> reserveMinFpsLevel3;
 };
 
+struct MeasuredFpsSample {
+    bool valid = false;
+    float fps = 0.0f;
+    int frameCount = -1;
+};
+
 int parseInt(const char* text) {
     if (text == nullptr) {
         return 0;
@@ -249,27 +255,46 @@ std::vector<int> buildStockPayload(const AdfrConfig& config) {
     return modes;
 }
 
-int parseMeasuredFps(const std::string& text) {
-    const std::string marker = "fps:";
+float parseFloatAfterMarker(const std::string& text, const std::string& marker) {
     const size_t markerPos = text.find(marker);
     if (markerPos == std::string::npos) {
-        return 0;
+        return -1.0f;
     }
 
     const size_t valueStart = text.find_first_not_of(" \t", markerPos + marker.size());
     if (valueStart == std::string::npos) {
-        return 0;
+        return -1.0f;
     }
 
     const size_t valueEnd = text.find_first_of(" \t\r\n", valueStart);
     const std::string value = text.substr(valueStart, valueEnd - valueStart);
     char* end = nullptr;
     const float parsed = std::strtof(value.c_str(), &end);
-    if (end == value.c_str() || parsed <= 0.0f) {
-        return 0;
+    if (end == value.c_str()) {
+        return -1.0f;
     }
 
-    return static_cast<int>(parsed + 0.5f);
+    return parsed;
+}
+
+MeasuredFpsSample parseMeasuredFps(const std::string& text) {
+    MeasuredFpsSample sample;
+
+    const std::string marker = "fps:";
+    const float fps = parseFloatAfterMarker(text, marker);
+    if (fps < 0.0f) {
+        return sample;
+    }
+
+    sample.valid = true;
+    sample.fps = fps;
+
+    const float frameCount = parseFloatAfterMarker(text, "frame_count:");
+    if (frameCount >= 0.0f) {
+        sample.frameCount = static_cast<int>(frameCount + 0.5f);
+    }
+
+    return sample;
 }
 
 int readIntFile(const char* path) {
@@ -314,14 +339,28 @@ void mirrorMinFpsProperty() {
         enforceUserMinFpsFloor(minFpsFloor);
 
         int refreshRate = 0;
+        MeasuredFpsSample sample;
 
         std::string measuredFps;
         if (android::base::ReadFileToString(kMeasuredFpsPath, &measuredFps)) {
-            refreshRate = parseMeasuredFps(measuredFps);
+            sample = parseMeasuredFps(measuredFps);
+            if (sample.valid && sample.fps > 0.0f) {
+                refreshRate = static_cast<int>(sample.fps + 0.5f);
+            } else if (sample.valid && sample.frameCount == 0) {
+                refreshRate = readIntFile(kOplusMinFpsPath);
+            } else {
+                refreshRate = readIntFile(kOplusMinFpsPath);
+            }
         }
 
         if (refreshRate <= 0) {
-            refreshRate = readIntFile(kOplusMinFpsPath);
+            if (minFpsFloor > 0) {
+                refreshRate = readIntFile(kOplusMinFpsPath);
+            } else if (!lastValue.empty()) {
+                refreshRate = parseInt(lastValue.c_str());
+            } else {
+                refreshRate = readIntFile(kOplusMinFpsPath);
+            }
         }
 
         if (minFpsFloor > 0 && refreshRate < minFpsFloor) {
@@ -393,6 +432,9 @@ int main() {
     }
 
     LOG(INFO) << "Initialized stock ADFR minfps config version " << config.version;
+    LOG(INFO) << "ADFR flags enable=" << config.enable << " debug=" << config.debugEnable
+              << " sensor=" << config.sensorEnable << " panelNit=" << config.panelNitEnable
+              << " gray=" << config.grayEnable;
     mirrorMinFpsProperty();
     return 0;
 }
