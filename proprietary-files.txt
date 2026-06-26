@@ -748,6 +748,7 @@ odm/etc/camera/pfb_bin/ThirdPartyPreSkintuneBinary.bin
 odm/etc/camera/pfb_bin/ThirdPartyPreSkintuneMRTBinary.bin
 odm/etc/camera/pfb_bin/ThirdPartyPreVertFilterBinary.bin
 odm/etc/camera/pfb_bin/ThirdPartyPreVertSurBinary.bin
+odm/etc/camera/singleblur/license_release.license
 odm/etc/camera/singleblur/personseg.bin
 odm/etc/camera/singleblur/preview_seg.json
 odm/etc/camera/sticker/material/animoji/data.zip
@@ -848,6 +849,7 @@ odm/lib64/camera/components/com.oplus.stats.awb.so
 odm/lib64/camera/components/com.oplus.stats.pdlib.so
 odm/lib64/camera/components/libcamxoemsatsoftwarefusionwrapper.so
 odm/lib64/camera/components/libcamxoemsatwrapper.so
+odm/lib64/libPDParamParser.so
 odm/lib64/camera/AIAWB_q.odnn
 odm/lib64/camera/awb_parameter_default.bin
 odm/lib64/camera/awb_parameter_infinitifront.bin
@@ -1091,6 +1093,7 @@ odm/lib64/libremosaiclib.so
 odm/lib64/libsat.so
 odm/lib64/libsaveshaderbin.so
 odm/lib64/libsharebuffer.so
+odm/lib64/libAncHumanSegFigureFusion.so
 odm/lib64/libsharebuffer_impl.so
 odm/lib64/libssd_det.so
 odm/lib64/libtensorflowlite_oplus.so
@@ -1214,6 +1217,7 @@ vendor/lib64/camera/components/libcamxevainterface.so
 vendor/lib64/camera/components/libdepthmapwrapper.so
 vendor/lib64/camera/components/libdepthmapwrapper_itof.so
 vendor/lib64/camera/components/libdepthmapwrapper_secure.so
+vendor/lib64/libiccprofile.so
 vendor/lib64/camera/bitmlconfig.bin
 vendor/lib64/camera/camxfl115indices.bin
 vendor/lib64/camera/camxfl300v1indices.bin
@@ -1883,3 +1887,11 @@ odm/etc/wifi/peach/bdwlan.elf
 odm/etc/wifi/peach/regdb.bin
 odm/etc/wifi/peach/regdb_version
 odm/vendor/etc/wifi/WCNSS_qcom_cfg.ini
+
+# Camera (Oplus OCCE shader cache)
+odm/bin/occe_create
+odm/etc/init/occe_create.rc
+
+# Camera (Oplus camera port): stock libutils/libui ABI for libsharebuffer_impl
+vendor/lib64/libutils.so:vendor/lib64/libutils-stock.so;FIX_SONAME
+vendor/lib64/libui.so:vendor/lib64/libui-stock.so;FIX_SONAME
