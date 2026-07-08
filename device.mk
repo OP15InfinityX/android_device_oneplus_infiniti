@@ -70,7 +70,9 @@ PRODUCT_PACKAGES += \
 
 # Properties
 PRODUCT_PRODUCT_PROPERTIES += \
-    ro.build.version.ota=CPH2745_11.A.42_0420_202606022356
+    ro.build.version.ota=CPH2747_11.A.42_0420_202606022357 \
+    ro.oplus.product.series=flagship_series \
+    ro.product.supported_versions=24863
 
 # Recovery
 $(call soong_config_set_bool,recovery,target_recovery_uses_qti_drm,true)
