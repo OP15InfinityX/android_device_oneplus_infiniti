@@ -1771,6 +1771,8 @@ vendor/firmware/gen80900_zap.mbn
 odm/etc/horae/horae_target.conf
 
 # Neural networks
+odm/etc/AIMotion/q_384_192_l1_p0_t0_genshin.bin
+odm/etc/AIMotion/q_384_192_l2_p0_t0_genshin.bin
 odm/lib64/AIMotion/cdsp/libQnnHtpV81Skel.so;MODULE_SUFFIX=.AIMotion
 odm/lib64/AIMotion/libQnnHtp.so;MODULE_SUFFIX=.AIMotion
 odm/lib64/AIMotion/libQnnHtpV81Stub.so;MODULE_SUFFIX=.AIMotion
