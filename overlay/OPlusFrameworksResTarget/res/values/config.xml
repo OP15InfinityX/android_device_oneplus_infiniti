@@ -41,7 +41,15 @@
     <!-- Screen brightness used to dim the screen while dozing in a very low power state.
          May be less than the minimum allowed brightness setting
          that can be set by the user. -->
-    <item type="dimen" name="config_screenBrightnessDozeFloat">0.00366300366</item>
+    <item type="dimen" name="config_screenBrightnessDozeFloat">0.06667</item>
+
+    <!-- Keep Doze in control during the screen-off transition. Letting PowerManager turn the
+         panel off first drops Oplus' display pipeline into the lowest AOD nit bucket. -->
+    <bool name="config_dozeAfterScreenOffByDefault">false</bool>
+
+    <!-- Keep the panel on the bright policy until SystemUI's doze component has taken over.
+         This avoids an extra framework dim step before AOD applies its final brightness. -->
+    <bool name="config_brightWhenDozing">true</bool>
 
     <!-- Stability requirements in milliseconds for accepting a new brightness level.  This is used
          for debouncing the light sensor.  Different constants are used to debounce the light sensor
