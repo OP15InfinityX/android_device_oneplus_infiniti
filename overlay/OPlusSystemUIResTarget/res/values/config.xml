@@ -8,4 +8,22 @@
          leave a duplicated punch-hole mask / colored line around popup transitions. Use the
          regular SystemUI software decoration overlays on this device instead. -->
     <bool name="config_disableHwcScreenDecorations">true</bool>
+
+    <!-- Oplus exposes a binary wakeup AOD lux sensor: 0 = low light, 1 = bright light. -->
+    <string name="doze_brightness_sensor_type" translatable="false">qti.sensor.lux_aod</string>
+
+    <integer-array name="config_doze_brightness_sensor_to_brightness">
+        <item>8</item>
+        <item>60</item>
+    </integer-array>
+
+    <integer-array name="config_doze_brightness_sensor_to_scrim_opacity">
+        <item>0</item>
+        <item>0</item>
+    </integer-array>
+
+    <integer-array name="config_doze_brightness_sensor_to_wallpaper_scrim_opacity">
+        <item>0</item>
+        <item>0</item>
+    </integer-array>
 </resources>
