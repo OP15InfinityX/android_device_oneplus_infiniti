@@ -12,3 +12,4 @@ allow oplus_adfr_init vendor_sysfs_graphics:dir search;
 allow oplus_adfr_init vendor_sysfs_graphics:file rw_file_perms;
 
 set_prop(oplus_adfr_init, vendor_display_prop)
+get_prop(oplus_adfr_init, boot_status_prop)

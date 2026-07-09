@@ -15,8 +15,8 @@
 #include <algorithm>
 #include <charconv>
 #include <chrono>
-#include <cstdlib>
 #include <cstdint>
+#include <cstdlib>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -34,12 +34,14 @@ constexpr char kMeasuredFpsPath[] = "/sys/class/drm/card0-sde-crtc-0/measured_fp
 constexpr char kFpsPeriodicityPath[] = "/sys/class/drm/card0-sde-crtc-0/fps_periodicity_ms";
 constexpr char kOplusRefreshRateProperty[] = "vendor.display.oplus_refresh_rate";
 constexpr char kOplusLtpoMinFpsProperty[] = "vendor.display.oplus_ltpo_min_fps";
+constexpr char kBootCompletedProperty[] = "sys.boot_completed";
 constexpr auto kMinFpsMirrorInterval = std::chrono::milliseconds(50);
 
 constexpr int kFeatureAdfr2MinFpsEnable = 232;
 constexpr int kFeatureAdfr2MinFpsState = 233;
 constexpr int kFeatureRusUpdate = 234;
 constexpr int kLowestUserMinFps = 30;
+constexpr int kLowestPanelMinFpsFloor = 90;
 
 struct AdfrConfig {
     int version = 0;
@@ -311,7 +313,16 @@ int readIntFile(const char* path) {
 
 int readUserMinFpsFloor() {
     const int minFps = android::base::GetIntProperty(kOplusLtpoMinFpsProperty, 0);
-    return minFps >= kLowestUserMinFps ? minFps : 0;
+    if (minFps >= kLowestPanelMinFpsFloor) {
+        return minFps;
+    }
+
+    if (android::base::GetBoolProperty(kBootCompletedProperty, false) &&
+        minFps >= kLowestUserMinFps) {
+        return minFps;
+    }
+
+    return 0;
 }
 
 void enforceUserMinFpsFloor(int minFpsFloor) {
