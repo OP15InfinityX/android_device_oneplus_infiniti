@@ -1520,6 +1520,7 @@ my_product/etc/sys_dynamic_frame_config.xml:product/etc/sys_dynamic_frame_config
 my_product/etc/extension/com.oplus.oplus-feature.xml:product/etc/extension/com.oplus.oplus-feature.xml
 my_product/etc/permissions/oplus.product.display_features.xml:product/etc/permissions/oplus.product.display_features.xml
 my_product/etc/permissions/oplus.product.display_system_features.xml:product/etc/permissions/oplus.product.display_system_features.xml
+my_product/etc/permissions/oplus.product.features_multimedia_common.xml:product/etc/permissions/oplus.product.features_multimedia_common.xml
 my_product/etc/permissions/oplus.product.feature_multimedia_unique.xml:product/etc/permissions/oplus.product.feature_multimedia_unique.xml
 my_product/vendor/etc/display_apollo_list_AA601_P_7_A0020_dsc_cmd_mode_panel.xml:vendor/etc/display_apollo_list_AA601_P_7_A0020_dsc_cmd_mode_panel.xml
 my_product/vendor/etc/display_apollo_list_AD296_P_3_A0020_dsc_cmd_mode_panel.xml:vendor/etc/display_apollo_list_AD296_P_3_A0020_dsc_cmd_mode_panel.xml
