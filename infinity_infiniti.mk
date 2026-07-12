@@ -21,14 +21,14 @@ PRODUCT_NAME := lineage_infiniti
 PRODUCT_DEVICE := infiniti
 PRODUCT_MANUFACTURER := OnePlus
 PRODUCT_BRAND := OnePlus
-PRODUCT_MODEL := CPH2747
+PRODUCT_MODEL := CPH2745
 
 PRODUCT_GMS_CLIENTID_BASE := android-oneplus
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
     BuildDesc="qssi_64-user 16 BP2A.250605.015 1779937534743 release-keys" \
-    BuildFingerprint=OnePlus/CPH2747/OP611FL1:16/BP2A.250605.015/B.R4T3.202606012318:user/release-keys \
+    BuildFingerprint=OnePlus/CPH2745IN/OP611FL1:16/BP2A.250605.015/B.R4T3.2e4dd7d-a2e41f-a65541:user/release-keys \
     DeviceName=OP611FL1 \
-    DeviceProduct=CPH2747 \
+    DeviceProduct=CPH2745 \
     SystemDevice=OP611FL1 \
-    SystemName=CPH2747
+    SystemName=CPH2745
