@@ -41,7 +41,6 @@ constexpr int kFeatureAdfr2MinFpsEnable = 232;
 constexpr int kFeatureAdfr2MinFpsState = 233;
 constexpr int kFeatureRusUpdate = 234;
 constexpr int kLowestUserMinFps = 30;
-constexpr int kLowestPanelMinFpsFloor = 90;
 
 struct AdfrConfig {
     int version = 0;
@@ -313,10 +312,6 @@ int readIntFile(const char* path) {
 
 int readUserMinFpsFloor() {
     const int minFps = android::base::GetIntProperty(kOplusLtpoMinFpsProperty, 0);
-    if (minFps >= kLowestPanelMinFpsFloor) {
-        return minFps;
-    }
-
     if (android::base::GetBoolProperty(kBootCompletedProperty, false) &&
         minFps >= kLowestUserMinFps) {
         return minFps;
