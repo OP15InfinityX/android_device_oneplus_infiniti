@@ -33,26 +33,60 @@
 
 #include "effect.h"
 
+#include <android-base/properties.h>
+#include <string>
+
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(*(a)))
 
 #include "standard_effect.h"
+#include "yaap_haptic_profiles.h"
+#include "op15_stock_effects.h"
 #include "primitive_effect.h"
 
 const struct effect_stream *get_effect_stream(uint32_t effect_id)
 {
+    using android::base::GetProperty;
+
     int i;
+    std::string profile = GetProperty("persist.vendor.haptic_profile", "");
+    const struct effect_stream *selected_effects = effects;
+    size_t effects_size = ARRAY_SIZE(effects);
 
     if ((effect_id & 0x8000) != 0) {
         effect_id = effect_id & 0x7fff;
+        const struct effect_stream *selected_primitives = primitives;
+        size_t primitives_size = ARRAY_SIZE(primitives);
 
-        for (i = 0; i < ARRAY_SIZE(primitives); i++) {
-            if (effect_id == primitives[i].effect_id)
-                return &primitives[i];
+        if (profile == "op15def") {
+            selected_primitives = primitives_op15def;
+            primitives_size = ARRAY_SIZE(primitives_op15def);
+        } else if (profile == "op15soft") {
+            selected_primitives = primitives_op15soft;
+            primitives_size = ARRAY_SIZE(primitives_op15soft);
+        }
+
+        for (i = 0; i < primitives_size; i++) {
+            if (effect_id == selected_primitives[i].effect_id)
+                return &selected_primitives[i];
         }
     } else {
-        for (i = 0; i < ARRAY_SIZE(effects); i++) {
-            if (effect_id == effects[i].effect_id)
-                return &effects[i];
+        if (profile == "crisp") {
+            selected_effects = effects_crisp;
+            effects_size = ARRAY_SIZE(effects_crisp);
+        } else if (profile == "gentle") {
+            selected_effects = effects_gentle;
+            effects_size = ARRAY_SIZE(effects_gentle);
+        } else if (profile == "op15def") {
+            selected_effects = effects_op15def;
+            effects_size = ARRAY_SIZE(effects_op15def);
+        } else if (profile == "op15soft") {
+            selected_effects = effects_op15soft;
+            effects_size = ARRAY_SIZE(effects_op15soft);
+        }
+
+        for (i = 0; i < effects_size; i++) {
+            if (effect_id == selected_effects[i].effect_id)
+                return &selected_effects[i];
         }
     }
 

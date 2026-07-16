@@ -4,6 +4,7 @@ cc_library_shared {
         "libqtivibratoreffect_headers",
     ],
     shared_libs: [
+        "libbase",
         "libcutils",
         "libutils",
     ],
