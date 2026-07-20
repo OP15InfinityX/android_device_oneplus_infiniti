@@ -1,3 +1,8 @@
 # Regional properties
 import /odm/etc/${ro.boot.prjname}/build.default.prop
 ro.product.property_source_order=odm,vendor,product,system_ext,system
+
+# Dolby Vision
+ro.vendor.oplus.dolby_vision_dpu=1
+ro.vendor.oplus.dolby_vision_dpu.dvs=1
+ro.vendor.oplus.dolby_vision.multi_cfg=1
