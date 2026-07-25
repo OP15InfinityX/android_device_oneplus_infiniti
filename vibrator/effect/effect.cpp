@@ -42,13 +42,14 @@
 #include "yaap_haptic_profiles.h"
 #include "op15_stock_effects.h"
 #include "primitive_effect.h"
+#include "generated_primitive_profiles.h"
 
 const struct effect_stream *get_effect_stream(uint32_t effect_id)
 {
     using android::base::GetProperty;
 
     int i;
-    std::string profile = GetProperty("persist.vendor.haptic_profile", "");
+    std::string profile = GetProperty("persist.sys.haptic_profile", "richtap");
     const struct effect_stream *selected_effects = effects;
     size_t effects_size = ARRAY_SIZE(effects);
 
@@ -57,7 +58,13 @@ const struct effect_stream *get_effect_stream(uint32_t effect_id)
         const struct effect_stream *selected_primitives = primitives;
         size_t primitives_size = ARRAY_SIZE(primitives);
 
-        if (profile == "op15def") {
+        if (profile == "crisp") {
+            selected_primitives = primitives_crisp;
+            primitives_size = ARRAY_SIZE(primitives_crisp);
+        } else if (profile == "gentle") {
+            selected_primitives = primitives_gentle;
+            primitives_size = ARRAY_SIZE(primitives_gentle);
+        } else if (profile == "op15def") {
             selected_primitives = primitives_op15def;
             primitives_size = ARRAY_SIZE(primitives_op15def);
         } else if (profile == "op15soft") {
