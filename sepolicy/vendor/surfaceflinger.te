@@ -1,0 +1,3 @@
+# Show refresh rate overlay reads the panel test-TE counter.
+allow surfaceflinger vendor_sysfs_graphics:dir search;
+allow surfaceflinger vendor_sysfs_graphics:file r_file_perms;
