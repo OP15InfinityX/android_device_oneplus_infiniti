@@ -7,7 +7,10 @@
 #include <android-base/logging.h>
 #include <android-base/properties.h>
 #include <android-base/strings.h>
+#include <android/binder_ibinder.h>
 #include <android/binder_manager.h>
+#include <android/binder_parcel.h>
+#include <android/binder_status.h>
 #include <tinyxml2.h>
 
 #include <aidl/vendor/oplus/hardware/displaypanelfeature/IDisplayPanelFeature.h>
@@ -28,19 +31,110 @@ namespace {
 
 constexpr char kServiceName[] =
         "vendor.oplus.hardware.displaypanelfeature.IDisplayPanelFeature/default";
+constexpr char kDisplayConfigServiceName[] =
+        "vendor.qti.hardware.display.config.IDisplayConfig/default";
+constexpr char kDisplayConfigDescriptor[] =
+        "vendor.qti.hardware.display.config.IDisplayConfig";
 constexpr char kAdfrConfigPath[] = "/vendor/etc/multimedia_display_adfr2minfps_config.xml";
 constexpr char kOplusMinFpsPath[] = "/sys/kernel/oplus_display/min_fps";
+constexpr char kOplusPowerStatusPath[] = "/sys/kernel/oplus_display/power_status";
 constexpr char kMeasuredFpsPath[] = "/sys/class/drm/card0-sde-crtc-0/measured_fps";
 constexpr char kFpsPeriodicityPath[] = "/sys/class/drm/card0-sde-crtc-0/fps_periodicity_ms";
 constexpr char kOplusRefreshRateProperty[] = "vendor.display.oplus_refresh_rate";
 constexpr char kOplusLtpoMinFpsProperty[] = "vendor.display.oplus_ltpo_min_fps";
 constexpr char kBootCompletedProperty[] = "sys.boot_completed";
 constexpr auto kMinFpsMirrorInterval = std::chrono::milliseconds(50);
+constexpr auto kWakeQsyncDelay = std::chrono::milliseconds(1500);
+constexpr auto kIdleQsyncDelay = std::chrono::milliseconds(750);
+constexpr auto kQsyncRetryDelay = std::chrono::seconds(5);
 
 constexpr int kFeatureAdfr2MinFpsEnable = 232;
 constexpr int kFeatureAdfr2MinFpsState = 233;
 constexpr int kFeatureRusUpdate = 234;
 constexpr int kLowestUserMinFps = 30;
+constexpr transaction_code_t kSetQsyncModeTransaction = FIRST_CALL_TRANSACTION + 38;
+constexpr int32_t kPrimaryDisplay = 0;
+constexpr int32_t kOplusAutoQsyncMode = 0x5cc18181;
+
+void waitForBootCompleted() {
+    while (!android::base::GetBoolProperty(kBootCompletedProperty, false)) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+void* createDisplayConfigBinder(void*) {
+    return nullptr;
+}
+
+void destroyDisplayConfigBinder(void*) {}
+
+binder_status_t transactDisplayConfigBinder(AIBinder*, transaction_code_t, const AParcel*,
+                                             AParcel*) {
+    return STATUS_UNKNOWN_TRANSACTION;
+}
+
+const AIBinder_Class* getDisplayConfigBinderClass() {
+    static AIBinder_Class* clazz =
+            AIBinder_Class_define(kDisplayConfigDescriptor, createDisplayConfigBinder,
+                                  destroyDisplayConfigBinder, transactDisplayConfigBinder);
+    return clazz;
+}
+
+bool enableOplusAutoQsync() {
+    ndk::SpAIBinder binder(AServiceManager_waitForService(kDisplayConfigServiceName));
+    if (binder.get() == nullptr) {
+        LOG(ERROR) << "QTI display config service is unavailable";
+        return false;
+    }
+
+    if (!AIBinder_associateClass(binder.get(), getDisplayConfigBinderClass())) {
+        LOG(ERROR) << "Failed to associate QTI display config Binder class";
+        return false;
+    }
+
+    AParcel* input = nullptr;
+    AParcel* output = nullptr;
+    binder_status_t status = AIBinder_prepareTransaction(binder.get(), &input);
+    if (status != STATUS_OK) {
+        LOG(ERROR) << "Failed to prepare QTI setQsyncMode transaction: " << status;
+        return false;
+    }
+
+    status = AParcel_writeInt32(input, kPrimaryDisplay);
+    if (status == STATUS_OK) {
+        status = AParcel_writeInt32(input, kOplusAutoQsyncMode);
+    }
+    if (status != STATUS_OK) {
+        LOG(ERROR) << "Failed to write QTI setQsyncMode transaction: " << status;
+        AParcel_delete(input);
+        return false;
+    }
+
+    status = AIBinder_transact(binder.get(), kSetQsyncModeTransaction, &input, &output, 0);
+    if (status != STATUS_OK) {
+        LOG(ERROR) << "QTI setQsyncMode transaction failed: " << status;
+        AParcel_delete(output);
+        return false;
+    }
+
+    AStatus* remoteStatus = nullptr;
+    status = AParcel_readStatusHeader(output, &remoteStatus);
+    const bool ok = status == STATUS_OK && remoteStatus != nullptr && AStatus_isOk(remoteStatus);
+    if (!ok) {
+        const char* description = remoteStatus != nullptr
+                ? AStatus_getDescription(remoteStatus)
+                : nullptr;
+        LOG(ERROR) << "QTI setQsyncMode returned an error: "
+                   << (description != nullptr ? description : "invalid status header");
+        if (description != nullptr) {
+            AStatus_deleteDescription(description);
+        }
+    }
+
+    AStatus_delete(remoteStatus);
+    AParcel_delete(output);
+    return ok;
+}
 
 struct AdfrConfig {
     int version = 0;
@@ -310,6 +404,23 @@ int readIntFile(const char* path) {
     return result.ec == std::errc() ? parsed : 0;
 }
 
+int readPanelPowerStatus() {
+    std::string value;
+    if (!android::base::ReadFileToString(kOplusPowerStatusPath, &value)) {
+        return -1;
+    }
+
+    const size_t separator = value.rfind(':');
+    if (separator == std::string::npos) {
+        return -1;
+    }
+
+    value = android::base::Trim(value.substr(separator + 1));
+    int parsed = -1;
+    auto result = std::from_chars(value.data(), value.data() + value.size(), parsed);
+    return result.ec == std::errc() ? parsed : -1;
+}
+
 int readUserMinFpsFloor() {
     const int minFps = android::base::GetIntProperty(kOplusLtpoMinFpsProperty, 0);
     if (android::base::GetBoolProperty(kBootCompletedProperty, false) &&
@@ -340,7 +451,46 @@ void mirrorMinFpsProperty() {
     android::base::WriteStringToFile("100", kFpsPeriodicityPath);
 
     std::string lastValue;
+    int lastPowerStatus = readPanelPowerStatus();
+    auto wakeQsyncDeadline = std::chrono::steady_clock::time_point::max();
+    auto dozeQsyncDeadline = std::chrono::steady_clock::time_point::max();
+    auto idleQsyncDeadline = std::chrono::steady_clock::time_point::max();
+    auto qsyncRetryAfter = std::chrono::steady_clock::time_point::min();
     while (true) {
+        const auto now = std::chrono::steady_clock::now();
+        const int powerStatus = readPanelPowerStatus();
+        if (lastPowerStatus > 0 && powerStatus == 0) {
+            wakeQsyncDeadline = now + kWakeQsyncDelay;
+        } else if (lastPowerStatus == 0 && powerStatus > 0) {
+            dozeQsyncDeadline = now + kWakeQsyncDelay;
+        }
+        if (powerStatus > 0) {
+            wakeQsyncDeadline = std::chrono::steady_clock::time_point::max();
+        } else if (powerStatus == 0) {
+            dozeQsyncDeadline = std::chrono::steady_clock::time_point::max();
+        }
+        if (powerStatus >= 0) {
+            lastPowerStatus = powerStatus;
+        }
+
+        if (now >= wakeQsyncDeadline) {
+            if (enableOplusAutoQsync()) {
+                LOG(INFO) << "Restored stock Oplus auto Qsync mode after wake";
+            } else {
+                LOG(ERROR) << "Failed to restore stock Oplus auto Qsync mode after wake";
+            }
+            wakeQsyncDeadline = std::chrono::steady_clock::time_point::max();
+        }
+
+        if (now >= dozeQsyncDeadline) {
+            if (enableOplusAutoQsync()) {
+                LOG(INFO) << "Restored stock Oplus auto Qsync mode after entering doze";
+            } else {
+                LOG(ERROR) << "Failed to restore stock Oplus auto Qsync mode after entering doze";
+            }
+            dozeQsyncDeadline = std::chrono::steady_clock::time_point::max();
+        }
+
         const int minFpsFloor = readUserMinFpsFloor();
         enforceUserMinFpsFloor(minFpsFloor);
 
@@ -357,6 +507,25 @@ void mirrorMinFpsProperty() {
             } else {
                 refreshRate = readIntFile(kOplusMinFpsPath);
             }
+        }
+
+        const int currentMinFps = readIntFile(kOplusMinFpsPath);
+        const bool needsIdleQsyncRestore =
+                powerStatus == 0 && minFpsFloor == 0 && sample.valid &&
+                sample.frameCount == 0 && currentMinFps > 1;
+        if (!needsIdleQsyncRestore) {
+            idleQsyncDeadline = std::chrono::steady_clock::time_point::max();
+        } else if (idleQsyncDeadline == std::chrono::steady_clock::time_point::max() &&
+                   now >= qsyncRetryAfter) {
+            idleQsyncDeadline = now + kIdleQsyncDelay;
+        } else if (now >= idleQsyncDeadline) {
+            if (enableOplusAutoQsync()) {
+                LOG(INFO) << "Restored stock Oplus auto Qsync mode after idle mode change";
+            } else {
+                LOG(ERROR) << "Failed to restore stock Oplus auto Qsync mode after mode change";
+            }
+            idleQsyncDeadline = std::chrono::steady_clock::time_point::max();
+            qsyncRetryAfter = now + kQsyncRetryDelay;
         }
 
         if (refreshRate <= 0) {
@@ -441,6 +610,11 @@ int main() {
     LOG(INFO) << "ADFR flags enable=" << config.enable << " debug=" << config.debugEnable
               << " sensor=" << config.sensorEnable << " panelNit=" << config.panelNitEnable
               << " gray=" << config.grayEnable;
+    waitForBootCompleted();
+    if (!enableOplusAutoQsync()) {
+        return 1;
+    }
+    LOG(INFO) << "Enabled stock Oplus auto Qsync mode";
     mirrorMinFpsProperty();
     return 0;
 }

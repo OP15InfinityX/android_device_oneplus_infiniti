@@ -5,7 +5,9 @@ init_daemon_domain(oplus_adfr_init)
 
 binder_use(oplus_adfr_init)
 hal_client_domain(oplus_adfr_init, vendor_hal_oplus_displaypanelfeature)
+hal_client_domain(oplus_adfr_init, hal_graphics_composer)
 binder_call(oplus_adfr_init, hal_oplus_displaypanelfeature_aidl)
+binder_call(oplus_adfr_init, hal_graphics_composer_default)
 
 allow oplus_adfr_init vendor_file:file r_file_perms;
 allow oplus_adfr_init vendor_sysfs_graphics:dir search;
