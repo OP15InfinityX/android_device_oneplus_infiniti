@@ -17,6 +17,10 @@ TARGET_HAS_UDFPS := true
 
 $(call inherit-product, vendor/infinity/config/common_full_phone.mk)
 
+# Keep fixed-source video below 60 fps from selecting high refresh-rate modes.
+PRODUCT_SYSTEM_EXT_PROPERTIES += \
+    debug.sf.frame_rate_multiple_threshold=120
+
 PRODUCT_NAME := lineage_infiniti
 PRODUCT_DEVICE := infiniti
 PRODUCT_MANUFACTURER := OnePlus
