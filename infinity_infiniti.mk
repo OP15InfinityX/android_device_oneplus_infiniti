@@ -14,6 +14,7 @@ $(call inherit-product, device/oneplus/infiniti/device.mk)
 # Inherit some common Lineage stuff.
 INFINITY_MAINTAINER := koaaN
 TARGET_HAS_UDFPS := true
+BYPASS_CHARGE_SUPPORTED := true
 
 $(call inherit-product, vendor/infinity/config/common_full_phone.mk)
 
