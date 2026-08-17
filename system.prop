@@ -1,3 +1,5 @@
 ro.product.marketname=OnePlus 15
 ro.infinity.soc=Snapdragon 8 Elite Gen 5
 ro.infinity.camera=50MP + 50MP + 50MP
+
+media.settings.xml=/vendor/etc/media_profiles_vendor.xml
