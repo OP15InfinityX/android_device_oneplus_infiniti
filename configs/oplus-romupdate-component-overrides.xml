@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2026 The LineageOS Project
+
+     SPDX-License-Identifier: Apache-2.0
+-->
+<config>
+    <!--
+         Keep the local RomUpdateProvider available to Oplus components, but
+         prevent the OxygenOS RUS client from receiving update broadcasts or
+         starting its background update services.
+    -->
+    <component-override package="com.oplus.romupdate">
+        <component class="com.oplusos.romupdate.receiver.UpdateReceiver" enabled="false" />
+        <component class="com.oplus.romupdate.TermsOfServiceReceiver" enabled="false" />
+        <component class="com.oplusos.romupdate.service.UpdateService" enabled="false" />
+        <component class="com.oplusos.romupdate.service.KillSelfService" enabled="false" />
+        <component class="com.oplus.ota.shelf.RUSShelfService" enabled="false" />
+        <component class="com.oplusos.romupdate.service.ConnectivityJobService" enabled="false" />
+    </component-override>
+</config>
