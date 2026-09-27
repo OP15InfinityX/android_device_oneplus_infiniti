@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-USE_PREBUILT_KERNEL ?= true
+USE_PREBUILT_KERNEL := false
 
 # Partitions
 BOARD_SUPER_PARTITION_SIZE := 17062428672
@@ -15,7 +15,7 @@ include device/oneplus/sm8850-common/BoardConfigCommon.mk
 DEVICE_PATH := device/oneplus/infiniti
 
 # SELinux
-BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
+BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
 SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/private
 
 # Assert
