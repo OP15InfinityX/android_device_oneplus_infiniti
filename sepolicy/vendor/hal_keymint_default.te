@@ -1,0 +1,8 @@
+# The NXP StrongBox implementation communicates with the embedded secure element.
+binder_call(hal_keymint_default, secure_element)
+allow hal_keymint_default secure_element_service:service_manager find;
+hal_client_domain(hal_keymint_default, hal_secure_element)
+
+allow hal_keymint_default self:capability2 wake_alarm;
+get_prop(hal_keymint_default, vendor_default_prop)
+wakelock_use(hal_keymint_default)

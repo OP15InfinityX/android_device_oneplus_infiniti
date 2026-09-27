@@ -1,2 +1,4 @@
 /odm/bin/oplus_adfr_init    u:object_r:oplus_adfr_init_exec:s0
+/vendor/bin/hw/android\.hardware\.security\.keymint3-service\.strongbox\.nxp u:object_r:hal_keymint_default_exec:s0
+/vendor/bin/hw/android\.hardware\.weaver-service\.nxp u:object_r:hal_weaver_default_exec:s0
 /(vendor|odm)/bin/hw/dvs-aidl-service u:object_r:dvs_aidl_default_exec:s0
