@@ -95,7 +95,9 @@ blob_fixups: blob_fixups_user_type = {
         .replace_needed('libutils.so', 'libutils-stock.so')
         .replace_needed('libui.so', 'libui-stock.so'),
     'vendor/lib64/libui-stock.so': blob_fixup()
-        .replace_needed('android.hardware.graphics.common-V6-ndk.so', 'android.hardware.graphics.common-V7-ndk.so'),
+        # No dynamic imports from graphics.common-V6; libgralloctypes uses V7
+        # on Android 17. Preserve the verified A17 compatibility fix.
+        .remove_needed('android.hardware.graphics.common-V6-ndk.so'),
 }  # fmt: skip
 
 module = ExtractUtilsModule(
