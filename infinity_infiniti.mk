@@ -16,6 +16,9 @@ INFINITY_MAINTAINER := koaaN
 TARGET_HAS_UDFPS := true
 BYPASS_CHARGE_SUPPORTED := true
 
+# Keep language selection on the first setup screen instead of deferring it.
+TARGET_SETUPWIZARD_LOCALE_AGNOSTIC := false
+
 $(call inherit-product, vendor/infinity/config/common_full_phone.mk)
 
 # Keep fixed-source video below 60 fps from selecting high refresh-rate modes.
