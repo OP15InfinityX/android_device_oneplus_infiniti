@@ -1,5 +1,6 @@
 package com.oplus.pluskey.actions;
 
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.MediaStore;
@@ -16,6 +17,8 @@ public class CameraAction implements Action {
     @Override
     public void run(Context ctx) {
         int mode = Settings.getCameraMode(ctx);
+        KeyguardManager keyguard = ctx.getSystemService(KeyguardManager.class);
+        boolean locked = keyguard != null && keyguard.isKeyguardLocked();
         Intent i;
         switch (mode) {
             case Constants.CAM_MODE_VIDEO:
@@ -27,7 +30,11 @@ public class CameraAction implements Action {
             case Constants.CAM_MODE_MACRO:
             case Constants.CAM_MODE_SLO_MO:
             default:
-                i = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                // Match the power-button camera gesture: a locked device must
+                // use the secure entry point, without exposing existing photos.
+                i = new Intent(locked
+                        ? MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE
+                        : MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
                 break;
         }
         // OPlusCamera reads these — Google Camera ignores them gracefully.
