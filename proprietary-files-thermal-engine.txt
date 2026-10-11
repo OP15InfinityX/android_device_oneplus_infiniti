@@ -1,0 +1,6 @@
+## Source: OnePlus 15 Global OxygenOS 16.0.8 dump.
+
+# Thermal engine
+odm/etc/temperature_profile/sys_thermal_control_config.xml;EXTRACT_ONLY
+system_ext/etc/horae/horae.conf;EXTRACT_ONLY
+vendor/etc/thermal-engine.conf
