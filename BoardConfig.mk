@@ -39,3 +39,7 @@ include vendor/oneplus/infiniti/BoardConfigVendor.mk
 
 # Camera (Oplus camera port) - OEM camera sets vendor props outside the standard namespace.
 BUILD_BROKEN_VENDOR_PROPERTY_NAMESPACE := true
+
+# OOS night bursts return RAW frames with non-monotonic sensor timestamps.
+# Preserve those timestamps for APS matching instead of dropping valid frames.
+$(call soong_config_set,cameraservice,allow_nonincreasing_timestamps,true)
