@@ -109,6 +109,10 @@ PRODUCT_COPY_FILES += \
 # Touch features
 $(call soong_config_set_bool,OPLUS_LINEAGE_TOUCH_HAL,ENABLE_GM,true)
 
+# Wi-Fi: load the patched INI before the persisted OOS copy.
+PRODUCT_COPY_FILES += \
+    vendor/oneplus/infiniti/proprietary/odm/vendor/etc/wifi/WCNSS_qcom_cfg.ini:$(TARGET_COPY_OUT_ODM)/etc/wifi/wlan/WCNSS_qcom_cfg.ini
+
 # Vibrator
 PRODUCT_PACKAGES += \
     vendor.qti.hardware.vibrator.service

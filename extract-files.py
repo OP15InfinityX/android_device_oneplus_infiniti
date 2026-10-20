@@ -47,6 +47,12 @@ lib_fixups: lib_fixups_user_type = {
 blob_fixups: blob_fixups_user_type = {
     'odm/etc/init/init.camera_process.rc': blob_fixup()
         .regex_replace('    delete_recursion', '    #delete_recursion'),
+    'odm/vendor/etc/wifi/WCNSS_qcom_cfg.ini': blob_fixup()
+        # Allow framework scans in ULL mode; also handle the original stock INI.
+        .regex_replace(
+            r'(?m)^([ \t]*wlm_latency_flags_ultralow[ \t]*=[ \t]*)0x180[dD]8[23]([ \t]*)$',
+            r'\g<1>0x180c82\g<2>',
+        ),
     (
         'odm/etc/libnfc-mtp-SN220.conf_24831',
         'odm/etc/libnfc-mtp-SN220.conf_24863',
