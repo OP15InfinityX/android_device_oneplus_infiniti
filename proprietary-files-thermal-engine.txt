@@ -1,4 +1,4 @@
-## Source: OnePlus 15 Global OxygenOS 16.0.8 dump.
+## Source: OnePlus 15 CPH2745 India ColorOS 17.0.0.102 dump.
 
 # Thermal engine
 odm/etc/temperature_profile/sys_thermal_control_config.xml;EXTRACT_ONLY

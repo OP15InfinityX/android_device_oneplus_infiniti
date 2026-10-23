@@ -1,5 +1,5 @@
 ## All proprietary files from this list, unless pinned and noted otherwise,
-## are from OnePlus 15 (CPH2745_16.0.8.300(EX01)).
+## are from OnePlus 15 (CPH2745_17.0.0.102(EX01)).
 
 abl.img;AB
 aop.img;AB
@@ -7,6 +7,7 @@ aop_config.img;AB
 bluetooth.img;AB
 cpucp.img;AB
 cpucp_dtb.img;AB
+dcp.img;AB
 devcfg.img;AB
 dsp.img;AB
 engineering_cdt.img;AB

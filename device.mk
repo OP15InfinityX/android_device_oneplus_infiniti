@@ -73,7 +73,7 @@ PRODUCT_PACKAGES += \
 
 # Properties
 PRODUCT_PRODUCT_PROPERTIES += \
-    ro.build.version.ota=CPH2745_11.A.42_0420_202606022356 \
+    ro.build.version.ota=CPH2745_11.C.75_1750_202610181120 \
     ro.oplus.product.series=flagship_series
 
 # VINTF

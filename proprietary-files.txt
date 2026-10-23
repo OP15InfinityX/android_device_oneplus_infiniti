@@ -1,5 +1,5 @@
 ## All proprietary files from this list, unless pinned and noted otherwise,
-## are from OnePlus 15 (CPH2745_16.0.8.300(EX01)).
+## are from OnePlus 15 (CPH2745_17.0.0.102(EX01)).
 
 # ACDB
 odm/etc/acdbdata/FTM/acdb_cal.acdb
@@ -22,6 +22,11 @@ odm/lib/rfsa/adsp/libosieubwc_skel.so
 odm/lib/rfsa/adsp/libtfadsp_sb5_5_rx.so
 odm/lib/rfsa/adsp/libtfadsp_sb5_5_tx.so
 odm/lib/rfsa/adsp/nlc_bgth_v1_5.so
+
+# COS 17 native camera dependencies
+odm/lib64/libVideoFaceLUT.so
+odm/lib64/libcreateRSPcachebin.so
+odm/lib64/libocam_hmbird.so
 
 # ANT+ firmware
 odm/firmware/secure_ta/antdtx.b00
@@ -758,7 +763,6 @@ odm/etc/camera/AiFace.json
 odm/etc/camera/BodySeg.json
 odm/etc/camera/CameraHWConfiguration.config
 odm/etc/camera/DitherTabU8
-odm/etc/camera/OplusOfflineReprocess.json
 odm/etc/camera/Vega_Align_occlusion.model
 odm/etc/camera/Vega_Align_occlusion_snap.model
 odm/etc/camera/Vega_Attribute_Face_RGB.model
@@ -958,7 +962,7 @@ odm/lib64/camera.oemlayer.healthmonitor.so
 odm/lib64/camera.oemlayer.logger.so
 odm/lib64/camera.oemlayer.uilayer.so
 odm/lib64/com.oplus.mcx.linearmapper.so
-odm/lib64/com.oplus.node.preview.v2.so
+odm/lib64/com.oplus.node.preview.v3.so
 odm/lib64/lib2DSlender.so
 odm/lib64/libAECParamParser.so
 odm/lib64/libAF.so
@@ -1052,7 +1056,6 @@ odm/lib64/libarcsoft_turbo_raw.so
 odm/lib64/libarcsoft_videoautozoom.so;FIX_SONAME
 odm/lib64/libc++_shared.so
 odm/lib64/libcam.odnn.interface.so
-odm/lib64/libcam.oplus.3a.v3.so
 odm/lib64/libcam.oplus.3a.v4.so
 odm/lib64/libcreateFDCLitecachebin.so
 odm/lib64/libcreateFDCcachebin.so
@@ -1665,7 +1668,6 @@ odm/etc/dolby/dolby_vision.cfg
 odm/etc/init/dvs-aidl-service.rc
 odm/etc/media_codecs_dolby_vision.xml
 odm/etc/vintf/manifest/dvs-aidl-service.xml
-odm/lib/vendor.dolby.dvs-V1-ndk.so
 odm/lib64/libdolbyclstc.so
 odm/lib64/vendor.dolby.dvs-V1-ndk.so
 
@@ -1904,3 +1906,81 @@ odm/etc/init/occe_create.rc
 # Camera (Oplus camera port): stock libutils/libui ABI for libsharebuffer_impl
 vendor/lib64/libutils.so:vendor/lib64/libutils-stock.so;FIX_SONAME
 vendor/lib64/libui.so:vendor/lib64/libui-stock.so;FIX_SONAME
+
+# COS 17 additions: new camera assets and verified runtime dependencies
+odm/etc/camera/OplusMultiDefault.xml
+odm/etc/camera/OplusSATPhoto.xml
+odm/etc/camera/OplusSATPortrait.xml
+odm/etc/camera/OplusSATVideo.xml
+odm/etc/camera/OplusSATVideoNonIPE.xml
+odm/etc/camera/OplusSingleDefault.xml
+odm/etc/camera/OplusSingleVideo.xml
+odm/etc/camera/OplusSingleVideoNonIPE.xml
+odm/etc/camera/Vega_Detect_AllAnimalBodyFaceEye_Gray.model
+odm/etc/camera/Vega_Detect_Head_BGR.model
+odm/etc/camera/Vega_Refine_Head.model
+odm/etc/camera/Vega_Refine_RectQuality_AllAnimalBodyFaceEye_BGR.model
+odm/etc/camera/Vega_Track_Head_Gray.model
+odm/etc/camera/apk_resources/mp4/ai_composition_entry_guide_inspiration_video.mp4
+odm/etc/camera/apk_resources/mp4/ai_composition_entry_guide_inspiration_video_zh.mp4
+odm/etc/camera/apk_resources/mp4/ai_composition_entry_guide_video.mp4
+odm/etc/camera/apk_resources/mp4/ai_composition_entry_guide_video_zh.mp4
+odm/etc/camera/meishe_lut/800t_master.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_hdr_master.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_hdr_master_0.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_hdr_master_1.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_hdr_normal.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_hdr_normal_0.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_hdr_normal_1.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_master.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_normal.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_sdr.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_sdr_0.bin
+odm/etc/camera/meishe_lut/blackandwhite_HC_sdr_1.bin
+odm/etc/camera/meishe_lut/fuji-nc_master.bin
+odm/etc/camera/meishe_lut/fuji-proNegHi_master.bin
+odm/etc/camera/meishe_lut/fuji_cc_master.bin
+odm/etc/camera/meishe_lut/portra400_hdr_master_a_1.bin
+odm/etc/camera/meishe_lut/portra400_hdr_master_d_1.bin
+odm/etc/camera/meishe_lut/portra400_hdr_normal_a_1.bin
+odm/etc/camera/meishe_lut/portra400_hdr_normal_d_1.bin
+odm/etc/camera/meishe_lut/portra400_master.bin
+odm/etc/camera/meishe_lut/portra400_normal.bin
+odm/etc/camera/meishe_lut/portra400_sdr_gen_a_1.bin
+odm/etc/camera/meishe_lut/portra400_sdr_gen_d_1.bin
+odm/etc/camera/meishe_lut/positive_hdr_master_a_1.bin
+odm/etc/camera/meishe_lut/positive_hdr_master_d_1.bin
+odm/etc/camera/meishe_lut/positive_hdr_normal_a_1.bin
+odm/etc/camera/meishe_lut/positive_hdr_normal_d_1.bin
+odm/etc/camera/meishe_lut/positive_master.bin
+odm/etc/camera/meishe_lut/positive_normal.bin
+odm/etc/camera/meishe_lut/positive_sdr_gen_a_1.bin
+odm/etc/camera/meishe_lut/positive_sdr_gen_d_1.bin
+odm/etc/camera/video_dehaze.json
+odm/etc/camera/video_facelut_aiccm_main.json
+odm/etc/camera/video_facelut_aiccm_tele.json
+odm/etc/camera/video_facelut_aiccm_wide.json
+odm/etc/camera/video_facelut_main.json
+odm/etc/camera/video_facelut_tele.json
+odm/etc/camera/video_facelut_ultra_tele.json
+odm/etc/camera/video_facelut_wide.json
+odm/firmware/fastchg/battery_damage_config.json
+odm/firmware/tp/infiniti/libaifilm.so
+odm/lib64/aiframe/libaiboost_litert.so
+odm/lib64/camera/components/com.oplus.node.videodehaze.so
+odm/lib64/com.oplus.node.defer.so
+odm/lib64/com.oplus.node.detect.v2.so
+odm/lib64/com.oplus.node.memcpy.so
+odm/lib64/com.oplus.node.mlft.so
+odm/lib64/com.oplus.node.photoeis.so
+odm/lib64/com.oplus.node.postproc.v2.so
+odm/lib64/com.oplus.node.previewdefognode.so
+odm/lib64/com.oplus.node.realt.so
+odm/lib64/com.oplus.node.satfusion.so
+odm/lib64/libVideoDehaze.so
+odm/lib64/libaiboost_vilte_sr.so
+odm/lib64/libaiboost_vilte_qnn_sr.so
+odm/lib64/libviltesr_ubwc.so
+vendor/firmware/dcp.bin
+vendor/lib64/rfs/dsp/libsvswdsp.so
+vendor/lib64/rfs/dsp/libsvswdsp_skel.so
