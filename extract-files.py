@@ -33,8 +33,15 @@ def lib_fixup_vendor_suffix(lib: str, partition: str, *args, **kwargs):
     return f'{lib}_{partition}' if partition == 'vendor' else None
 
 
+def lib_fixup_stock_charger(lib: str, partition: str, *args, **kwargs):
+    # COS17 camera imports the real OEM V11 ABI. Our source AIDL is frozen at
+    # V10; its generated development-V11 module is not the OEM V11 interface.
+    return f'{lib}_stock'
+
+
 lib_fixups: lib_fixups_user_type = {
     **lib_fixups,
+    'vendor.oplus.hardware.charger-V11-ndk': lib_fixup_stock_charger,
     (
         'libhcsutils',
         'vendor.oplus.hardware.camera.aon-V1-ndk',
@@ -45,6 +52,16 @@ lib_fixups: lib_fixups_user_type = {
 }
 
 blob_fixups: blob_fixups_user_type = {
+    # Keep COS17's OEM Charger V11 ABI separate from source-generated V11.
+    (
+        'odm/lib64/camera/components/com.oplus.node.mvgsat.so',
+        'odm/lib64/camera.oemlayer.healthmonitor.so',
+        'odm/lib64/camera.oemlayer.logger.so',
+        'odm/lib64/camera.oemlayer.uilayer.so',
+        'odm/lib64/com.oplus.mcx.linearmapper.so',
+    ): blob_fixup()
+        .replace_needed('vendor.oplus.hardware.charger-V11-ndk.so',
+                        'vendor.oplus.hardware.charger-V11-ndk_stock.so'),
     'odm/etc/init/init.camera_process.rc': blob_fixup()
         .regex_replace('    delete_recursion', '    #delete_recursion'),
     'odm/vendor/etc/wifi/WCNSS_qcom_cfg.ini': blob_fixup()
@@ -103,6 +120,10 @@ blob_fixups: blob_fixups_user_type = {
     'odm/lib64/libsharebuffer_impl.so': blob_fixup()
         .replace_needed('libutils.so', 'libutils-stock.so')
         .replace_needed('libui.so', 'libui-stock.so'),
+    # COS17 imports __cxa_init_primary_exception without declaring the C++
+    # runtime. AOSP's libc++ already exports it; make the dependency explicit.
+    'odm/lib64/libsaveshaderbin.so': blob_fixup()
+        .add_needed('libc++.so'),
     'vendor/lib64/libui-stock.so': blob_fixup()
         # No dynamic imports from graphics.common-V6; libgralloctypes uses V7
         # on Android 17. Preserve the verified A17 compatibility fix.
