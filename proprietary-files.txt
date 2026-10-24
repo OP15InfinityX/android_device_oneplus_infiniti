@@ -1984,3 +1984,27 @@ odm/lib64/libviltesr_ubwc.so
 vendor/firmware/dcp.bin
 vendor/lib64/rfs/dsp/libsvswdsp.so
 vendor/lib64/rfs/dsp/libsvswdsp_skel.so
+
+# COS17 stock backfill
+odm/etc/sensor/sensor_type
+odm/etc/static_lut_bt2020_to_sRGB_mm.cube
+odm/lib/rfsa/adsp/lhdc_enc_v1_0.so
+odm/lib64/aiframe/cdsp/signed/libviltesrubwc_skel.so
+odm/lib64/camera/com.qti.sensorsocmap.socid_map.bin
+odm/lib64/face_ree_model/faceunlock.model
+odm/lib64/libMetaSDK.so
+vendor/gpu/kbc/sequence_manifest.bin
+vendor/gpu/kbc/unified_kbcs_64.bin
+vendor/gpu/kbc/unified_ksqs.bin
+vendor/lib64/camera/com.qti.chi.featurecompatibilityspecification.netrani.bin
+vendor/lib64/camera/com.qti.chi.featurecompatibilityspecification.skyros.bin
+vendor/lib64/camera/com.qti.sensorsocmap.socid_map.bin
+vendor/lib64/camera/com.qti.tuned.molokai_default.bin
+vendor/lib64/camera/com.qti.tuned.molokai_qtech_imx766.bin
+vendor/lib64/camera/com.qti.tuned.molokai_qtech_imx858.bin
+vendor/lib64/camera/com.qti.tuned.molokai_qtech_s5kjn5.bin
+vendor/lib64/camera/com.qti.tuned.molokai_shinetech_ov32c.bin
+vendor/lib64/camera/com.qti.tuned.molokai_sony_imx888.bin
+vendor/lib64/camera/com.qti.tuned.molokai_tpg.bin
+vendor/lib64/camera/com.qti.tuned.molokai_tpg2.bin
+vendor/lib64/libdscaalgo.so
