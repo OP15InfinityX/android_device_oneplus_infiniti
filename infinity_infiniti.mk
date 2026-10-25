@@ -12,7 +12,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 $(call inherit-product, device/oneplus/infiniti/device.mk)
 
 # Inherit some common Lineage stuff.
-INFINITY_MAINTAINER := koaaN
+# Non-breaking spaces keep the maintainer property as one Make list item.
+INFINITY_MAINTAINER := koaaN & Daniel
 TARGET_HAS_UDFPS := true
 BYPASS_CHARGE_SUPPORTED := true
 
