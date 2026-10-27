@@ -106,11 +106,17 @@ blob_fixups: blob_fixups_user_type = {
         .replace_needed('libstdc++.so', 'libstdc++_vendor.so'),
     'vendor/etc/libnfc-nci.conf': blob_fixup()
         .regex_replace('NFC_DEBUG_ENABLED=1', 'NFC_DEBUG_ENABLED=0'),
-    (
-        'vendor/lib64/camera/components/com.qti.node.dewarp.so',
-        'vendor/lib64/vendor.qti.hardware.camera.offlinecamera-service-impl.so',
-    ): blob_fixup()
+    'vendor/lib64/camera/components/com.qti.node.dewarp.so': blob_fixup()
         .replace_needed('android.hardware.graphics.allocator-V1-ndk.so', 'android.hardware.graphics.allocator-V2-ndk.so'),
+    'vendor/lib64/vendor.qti.hardware.camera.offlinecamera-service-impl.so': blob_fixup()
+        .replace_needed('android.hardware.graphics.allocator-V1-ndk.so', 'android.hardware.graphics.allocator-V2-ndk.so')
+        # COS17 reads a legacy native-handle size at +0x1c. With source SnapAlloc
+        # that is the flags word (512), truncating offline camera metadata.
+        # Read SnapHandleProperties::size at +0x50; preserve the following FD load.
+        .binary_regex_replace(
+            b'\x1a\x1d\x40\xb9\x00\x0d\x40\xb9',
+            b'\x1a\x51\x40\xb9\x00\x0d\x40\xb9',
+        ),
     (
         'vendor/lib64/camera/components/com.qti.node.fd.so',
         'vendor/lib64/hw/camera.qcom.core.so',
