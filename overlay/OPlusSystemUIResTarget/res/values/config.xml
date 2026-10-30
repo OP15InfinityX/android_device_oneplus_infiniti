@@ -7,6 +7,9 @@
     <!-- Keep AOD animations drawable in active doze; LTPO handles idle refresh separately. -->
     <bool name="doze_suspend_display_state_supported">false</bool>
 
+    <!-- The panel filters ordinary backlight writes in AOD; dim its content instead. -->
+    <bool name="doze_use_screen_brightness_scrim">true</bool>
+
     <!-- The panel advertises HWC screen decoration support, but the HWC layer can transiently
          leave a duplicated punch-hole mask / colored line around popup transitions. Use the
          regular SystemUI software decoration overlays on this device instead. -->
