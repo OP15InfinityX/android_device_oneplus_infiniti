@@ -20,6 +20,8 @@ from extract_utils_oplus import (
     add_generated_thermal_engine_config,
 )
 
+from camera_bitmap_compat import blob_fixup_camera_bitmap_nv21
+
 namespace_imports = [
     'hardware/oplus',
     'hardware/qcom-caf/sm8850',
@@ -96,7 +98,8 @@ blob_fixups: blob_fixups_user_type = {
         .clear_symbol_version('AHardwareBuffer_release')
         .clear_symbol_version('AHardwareBuffer_unlock'),
     'odm/lib64/libAlgoProcess.so': blob_fixup()
-        .replace_needed('android.hardware.graphics.common-V5-ndk.so', 'android.hardware.graphics.common-V7-ndk.so'),
+        .replace_needed('android.hardware.graphics.common-V5-ndk.so', 'android.hardware.graphics.common-V7-ndk.so')
+        .call(blob_fixup_camera_bitmap_nv21),
     'odm/lib64/libBasicTonePhoto.so': blob_fixup()
         .binary_regex_replace(
             b'vec4\\(dstYuv\\.r, dstYuv\\.b, dstYuv\\.g, 1\\.0\\)',
