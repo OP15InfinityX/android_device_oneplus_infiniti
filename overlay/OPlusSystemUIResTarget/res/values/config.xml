@@ -13,7 +13,7 @@
     <!-- The panel advertises HWC screen decoration support, but the HWC layer can transiently
          leave a duplicated punch-hole mask / colored line around popup transitions. Use the
          regular SystemUI software decoration overlays on this device instead. -->
-    <bool name="config_disableHwcScreenDecorations">true</bool>
+    <bool name="config_disableHwcScreenDecoration">true</bool>
 
     <!-- Oplus exposes a binary wakeup AOD lux sensor: 0 = low light, 1 = bright light. -->
     <string name="doze_brightness_sensor_type" translatable="false">qti.sensor.lux_aod</string>
