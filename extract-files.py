@@ -21,6 +21,7 @@ from extract_utils_oplus import (
 )
 
 from camera_bitmap_compat import blob_fixup_camera_bitmap_nv21
+from camera_eis_compat import blob_fixup_camera_eis_snap_format
 
 namespace_imports = [
     'hardware/oplus',
@@ -100,6 +101,8 @@ blob_fixups: blob_fixups_user_type = {
     'odm/lib64/libAlgoProcess.so': blob_fixup()
         .replace_needed('android.hardware.graphics.common-V5-ndk.so', 'android.hardware.graphics.common-V7-ndk.so')
         .call(blob_fixup_camera_bitmap_nv21),
+    'odm/lib64/libEIS.so': blob_fixup()
+        .call(blob_fixup_camera_eis_snap_format),
     'odm/lib64/libBasicTonePhoto.so': blob_fixup()
         .binary_regex_replace(
             b'vec4\\(dstYuv\\.r, dstYuv\\.b, dstYuv\\.g, 1\\.0\\)',
